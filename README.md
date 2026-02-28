@@ -24,8 +24,15 @@ go run ./cmd/server
 Servidor disponível em:
 http://localhost:8080/cotacao
 
-3) Testar via curl (opcional):
+3) Testar manualmente via terminal:
 curl http://localhost:8080/cotacao
+
+Ou testar via Postman:
+- Método: GET
+- URL: http://localhost:8080/cotacao
+
+Resposta esperada:
+{ "bid": "5.12" }
 
 4) Rodar o Client (em outro terminal):
 go run ./cmd/client
