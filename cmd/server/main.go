@@ -11,10 +11,15 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// Permite mock em teste
+var httpClient = http.DefaultClient
+
+// dbTimeout agora é variável para permitir override em teste
+var dbTimeout = 10 * time.Millisecond
+
 const (
 	apiURL     = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
 	apiTimeout = 200 * time.Millisecond
-	dbTimeout  = 10 * time.Millisecond
 	serverPort = ":8080"
 )
 
@@ -67,7 +72,8 @@ func cotacaoHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		resp, err := http.DefaultClient.Do(req)
+		// 🔥 Agora usa httpClient (mockável)
+		resp, err := httpClient.Do(req)
 		if err != nil {
 			log.Println("Erro na API:", err)
 			http.Error(w, err.Error(), 504)
@@ -95,6 +101,7 @@ func cotacaoHandler(db *sql.DB) http.HandlerFunc {
 			log.Println("Erro no banco:", err)
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"bid": bid,
 		})

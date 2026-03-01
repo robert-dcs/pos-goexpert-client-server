@@ -9,17 +9,16 @@ import (
 	"time"
 )
 
-const (
-	serverURL     = "http://localhost:8080/cotacao"
-	clientTimeout = 300 * time.Millisecond
-)
+var serverURL = "http://localhost:8080/cotacao"
+var httpClient = http.DefaultClient
+
+const clientTimeout = 300 * time.Millisecond
 
 type CotacaoResponse struct {
 	Bid string `json:"bid"`
 }
 
-func main() {
-
+func run() {
 	ctx, cancel := context.WithTimeout(context.Background(), clientTimeout)
 	defer cancel()
 
@@ -29,7 +28,7 @@ func main() {
 		return
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Println("Erro ao chamar server:", err)
 		return
@@ -50,4 +49,8 @@ func main() {
 	}
 
 	log.Println("Cotação salva com sucesso:", content)
+}
+
+func main() {
+	run()
 }
