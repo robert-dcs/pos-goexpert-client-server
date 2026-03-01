@@ -24,7 +24,7 @@ func run() {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, serverURL, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("Erro ao criar requisição:", err)
 		return
 	}
 
@@ -35,16 +35,22 @@ func run() {
 	}
 	defer resp.Body.Close()
 
+	// Validação importante do StatusCode
+	if resp.StatusCode != http.StatusOK {
+		log.Println("Server retornou status:", resp.StatusCode)
+		return
+	}
+
 	var data CotacaoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		log.Println(err)
+		log.Println("Erro ao decodificar JSON:", err)
 		return
 	}
 
 	content := "Dólar: " + data.Bid
 
 	if err := os.WriteFile("cotacao.txt", []byte(content), 0644); err != nil {
-		log.Println(err)
+		log.Println("Erro ao escrever arquivo:", err)
 		return
 	}
 
